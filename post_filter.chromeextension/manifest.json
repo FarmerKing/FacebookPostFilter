@@ -1,0 +1,28 @@
+{
+  "manifest_version": 2,
+  "content_security_policy": "script-src 'self' https://ssl.google-analytics.com; object-src 'self'",
+  "name": "Facebook Post Filter",
+  "description": "This Extension can use keyword to filter you facebook post",
+  "version": "1.0.1",
+  "icons": { "48": "icon48.png", "16":"icon16.png" },
+  "permissions": [
+    "https://www.facebook.com/*",
+    "storage",
+    "tabs",
+	"contextMenus"],
+  "content_scripts": [{
+    "matches": ["https://www.facebook.com/*"],
+    "js": ["jquery-1.10.2.min.js","script.js"]
+  }],
+  "web_accessible_resources": [
+    "jquery-1.10.2.min.js"
+  ],
+  "browser_action":{
+    "default_icon":"icon48.png",
+    "default_popup":"setting.html",
+    "default_title":"Facebook Post Filter"
+  },
+  "background": {
+	"scripts": [ "background.js"]
+  }
+}
