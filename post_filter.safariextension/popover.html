@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+    <link rel="stylesheet" href="css/bootstrap.css">
+    <script src="scripts/jquery-1.10.2.min.js"></script>
+    <script src="scripts/popover.js"></script>
+    <style>
+        body{
+            width:500px;
+        }
+        .btn-group,.notice{
+            margin-top:5px;
+        }
+        .tab-content{
+            margin-top:5px;
+        }
+
+        .tab-pane div.alert{
+            text-align:justify;
+            text-justify:distribute;
+        }
+
+        .nav-pills > li.r_active > a,
+        .nav-pills > li.r_active > a:hover,
+        .nav-pills > li.r_active > a:focus {
+            color: #ffffff;
+            background-color: #db121b;
+        }
+    </style>
+</head>
+<body>
+    <div class="panel">
+        <div class="panel-heading">Facebook Post Filter</div>
+        <div class="panel-body">
+            <!--ul class="nav nav-pills">
+                <li id="nav_mark"><a href="#"> 
+                    <div class="radio"><input type="radio" name="filtertype" id="filtertypeMark" value="mark"/>Mark</div>
+                </a></li>
+                <li id="nav_filter"><a href="#"> 
+                    <div class="radio"><input type="radio" name="filtertype" id="filtertypeFilter" value="filter"/>Filter</div>
+                </a></li>
+            </ul-->
+            <div class="tab-content">
+                <div id="tab_mark" class="tab-pane">
+                    <div class="alert alert-success">
+                        <p></p>
+                    </div>
+
+                    <form action="">
+                        <textarea id="textarea_mark" class="form-control" cols="30" rows="10"></textarea>
+                    </form>
+                </div>
+                <div id="tab_filter" class="tab-pane active">
+                    <div class="alert alert-danger">
+                        <p></p>
+                    </div>
+                    <form action="">
+                        <textarea id="textarea_filter"  class="form-control" cols="30" rows="10"></textarea>
+                    </form>
+                </div>
+                <form action="">
+                    <div class="btn-group btn-group-justified">                    
+                        <a class="btn btn-primary" id="submit"></a>
+                        <a class="btn btn-default" id="switcher"></a>
+                        <a class="btn btn-default" id="clear"></a>
+                    </div>
+                </form>
+
+            </div>
+
+            <div class="alert alert-warning notice" style="display:none;"></div>
+            <div class="clearfix"></div>
+        </div>
+    </div>
+    <div class="copyright">
+       <p class="text-center"><!--powered by --><a id="a_chenghsi" href="http://chenghsi.com/" target="_blank"></a></p>
+    </div>
+    
+</body>
+</html>

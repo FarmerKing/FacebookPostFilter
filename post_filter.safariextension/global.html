@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <script src="scripts/lang.js" type="text/javascript"></script>
+</head>
+<body>
+    <script type="text/javascript">
+      var Language = "en";
+      var FFMessages = StaticMessage(Language);
+      var POST_FILTER_STORAGE = 'postfilter-ext',
+      defaultSettings = {"action":'filter', 
+                         "switcher": 'on', 
+                         "filter.keyword":"", 
+                         "mark.keyword":""},
+      settings = localStorage[POST_FILTER_STORAGE] ? JSON.parse(localStorage[POST_FILTER_STORAGE]) : defaultSettings;
+
+      // reload popover
+      for (var i = 0; i < safari.extension.popovers.length; ++i) {
+          var item = safari.extension.popovers[i];
+          if (item.identifier === "PostFilterPopover"){  
+              item.contentWindow.location.reload();
+              if(Language === "tw"){
+                  item.height = 509;
+              }else{
+                  item.height = 530;
+              }
+          }
+      }
+
+      // reload any page with facebook.com.tw.*
+      safari.application.browserWindows.forEach(function(browserWindow){
+          browserWindow.tabs.forEach(function(tab){
+              var tabLocation = document.createElement('a');
+              tabLocation.href= tab.url;
+              if (tabLocation.hostname === "www.facebook.com"){
+                  tab.url = tab.url;
+              }
+          });
+          
+      });
+
+      if(typeof settings.action === "undefined" ){
+          settings.action = "filter";
+          settings['mark.keyword'] = "";
+          settings['filter.keyword'] = "";
+      }
+
+      safari.application.addEventListener("validate", function(event){
+          if (event.command === "PostFilterToolbarBtn") {
+              // Disable the button if there is no URL loaded in the tab.
+              var tabLocation = document.createElement('a');
+              tabLocation.href= event.target.browserWindow.activeTab.url;
+              event.target.disabled = !(tabLocation.hostname === "www.facebook.com");
+          }
+      }, false);
+
+      //settings changed 
+      function togglePageSwitch(_settings) {
+          settings = _settings;
+          localStorage.setItem(POST_FILTER_STORAGE, JSON.stringify(_settings));
+          safari.application.activeBrowserWindow.activeTab.page.dispatchMessage("toggleSwitch", _settings);
+      }
+
+      //handle the contextmenu action (right click)
+      function handleContextMenu(event) {
+          if (settings['switcher'] ==='on' && event.userInfo !== "") {
+              event.contextMenu
+                  .appendContextMenuItem("posterfilter_add_keyword", 
+                                         FFMessages.menu_action_addfilterkeyword.replace("$mes",event.userInfo) );
+          }
+      }
+      safari.application.addEventListener("contextmenu", handleContextMenu, false);
+ 
+      //listen to message from content window
+      safari.application.addEventListener("message", function(e) {
+          switch (e.name) {
+          case 'getSettings':
+              safari.application.activeBrowserWindow.activeTab.page.dispatchMessage("init", settings);
+              console.log("message init sent");
+              break;
+          }
+      }, false);
+
+      //when contextmenu got the add keyword event, update the popover page 
+      safari.application.addEventListener("command", function(event){
+          switch(event.command){
+          case 'posterfilter_add_keyword': 
+              if( event.userInfo){
+                  var keywords = settings["filter.keyword"].split("\n");
+                  keywords.push(event.userInfo);
+                  keywords = keywords.filter(function(v){ return (v.trim()!='') });
+	              settings["filter.keyword"] = keywords.join("\n");
+                  safari.extension.popovers.forEach(function(popover){
+                      if(popover.identifier === "PostFilterPopover"){
+                          popover.contentWindow.updateStatus();
+                          return false;
+                      }
+                  });
+                  togglePageSwitch(settings);
+              }
+              break;
+          }
+
+      }, false);
+    </script>
+</body>
+</html>
