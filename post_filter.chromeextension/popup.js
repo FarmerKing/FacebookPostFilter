@@ -14,15 +14,21 @@ function trackButton(e) {
   };
 
 $(document).ready(function(){
+    // static international messages
+    $('.panel-body div p').html(chrome.i18n.getMessage("setting_note"));
+    $('#submit').html(chrome.i18n.getMessage("button_save"));
+    $('#clear').html(chrome.i18n.getMessage("button_clear"));
+    $('div.copyright p a').html(chrome.i18n.getMessage("company_name"));
+
     chrome.storage.sync.get('block.keyword',function(r){
         $('textarea').html(r['block.keyword']);
     });
     
 	chrome.storage.sync.get('switcher',function(e){
         if(e['switcher']=='on'){
-            $('#switcher').html('停用');
+            $('#switcher').html(chrome.i18n.getMessage("button_stop"));
         }else if(e['switcher']=='off'){
-            $('#switcher').html('啟用');
+            $('#switcher').html(chrome.i18n.getMessage("button_start"));
         }
     });
 	/*
@@ -60,16 +66,16 @@ $(document).ready(function(){
 	trackButton(e);
         chrome.storage.sync.get('switcher',function(e){
             if(e['switcher']=='on'){
-                $('#switcher').html('啟用');
+                $('#switcher').html(chrome.i18n.getMessage("button_start"));
                 chrome.storage.sync.set({'switcher':'off'});
             }else if(e['switcher']=='off'){
-                $('#switcher').html('停用');
+                $('#switcher').html(chrome.i18n.getMessage("button_stop"));
                 chrome.storage.sync.set({'switcher':'on'});
             }
 			chrome.tabs.reload();
             window.close();
             $('.notice').css('display','block');
-            $('.notice').html('重新整理頁面後方會啟用');
+            $('.notice').html(chrome.i18n.getMessage("notice_restart"));
         });
     });
 	/*

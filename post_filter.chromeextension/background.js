@@ -11,8 +11,8 @@ chrome.commands.onCommand.addListener(function(command) {
 
 
 var clickHandler = function(e) {
-	if(e.selectionText){
-		//alert(e.selectionText);
+	if(typeof e.selectionText !== "undefined" 
+       && e.selectionText.trim() !== ''){
 		chrome.storage.sync.get('block.keyword', function(r){
 			var text;
 			if(r['block.keyword']==undefined){
@@ -30,16 +30,13 @@ var clickHandler = function(e) {
 				});
 			});
 		});
-		
-	} else {
-		alert("請反白關鍵字");
 	}
 }
 
 
 var button = chrome.contextMenus.create({
-	"title": "以FB動態殺手 篩掉「%s」",
-	"contexts" : [ "page", "selection" ],
+	"title": chrome.i18n.getMessage("contextmenu_addfilterkeyword"),
+	"contexts" : [ "selection" ],
 	"onclick" : clickHandler
 });
 

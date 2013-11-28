@@ -1,0 +1,31 @@
+{
+    "extName": {
+        "message": "FB Post Filter",
+        "description": "Extension name."
+    },
+    "setting_note": {
+        "message": "Please enter the keywords you do not want to see on facebook. For example, if you don't want to see any posts about Justin Bieber, then enter \"Justin Bieber\" as the keyword. Then all posts containing the word \"Justin Bieber\" will disappear.",
+        "description": "Used as the description note in the setting.html"
+    },
+    "button_save": {
+        "message": "Save"
+    },
+    "button_stop": {
+        "message": "Stop"
+    },
+    "button_start": {
+        "message": "Start"
+    },
+    "button_clear": {
+        "message": "Clear"
+    },
+    "company_name": {
+        "message": "ChengHsi.com"
+    },
+    "contextmenu_addfilterkeyword": {
+        "message": "Filter out the \"%s\" using FB Post Filter"
+    },
+    "notice_restart": {
+        "message": ""
+    }
+}

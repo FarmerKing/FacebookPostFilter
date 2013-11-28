@@ -1,0 +1,31 @@
+{
+    "extName": {
+        "message": "FB 動態殺手",
+        "description": "Extension name."
+    },
+    "setting_note": {
+        "message": "請輸入在臉書的動態消息上，你不想看到貼文的主要關鍵字唷！（例如：你不想看到「黃色小鴨」的貼文，則輸入「黃色小鴨」），則有「黃色小鴨」關鍵字的貼文就消失啦！",
+        "description": "Used as the description note in the setting.html"
+    },
+    "button_save": {
+        "message": "儲存"
+    },
+    "button_stop": {
+        "message": "停用"
+    },
+    "button_start": {
+        "message": "啟用"
+    },
+    "button_clear": {
+        "message": "清空"
+    },
+    "company_name": {
+        "message": "丞希綠色資訊"
+    },
+    "contextmenu_addfilterkeyword": {
+        "message": "以 FB 動態殺手 篩掉「%s」"
+    },
+    "notice_restart": {
+        "message": "重新整理頁面後方會啟用"
+    }
+}

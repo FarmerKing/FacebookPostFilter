@@ -25,7 +25,6 @@ chrome.runtime.onMessage.addListener(
 
 
 chrome.storage.sync.get('switcher',function(e){
-      
     if(e['switcher']=='on'){
         $(target).find("div._5jmm").each(function(index, element){
 		        filter( $(element) );
@@ -62,16 +61,19 @@ chrome.storage.sync.get('switcher',function(e){
 
 function filter($element){
     chrome.storage.sync.get('block.keyword',function(r){
-        if(r['block.keyword'].trim()!=''){
+        if(typeof r['block.keyword'] !== "undefined" && 
+           r['block.keyword'].trim() !== ''){
             var keyword = r['block.keyword'].split("\n");
             for (var i = 0; i<keyword.length; i++) {
 			    if (keyword[i]!==""){
-                    if( $element.is(':contains("' + keyword[i] + '")') ){ 
-                        $element.addClass("FP-filter");
-                        $element.fadeOut();  break;
-                    }
+                    if( $element.find('.userContent:contains("' + keyword[i] + '"), \
+                                      .actorName:contains("' + keyword[i] + '"), \
+                                      ._5pbw:contains("' + keyword[i] + '")' ).length > 0 ){
+                                          $element.addClass("FP-filter");
+                                          $element.fadeOut();  break;
+                                      }
 				}
-            };  
+            }
         }
     })
 }
