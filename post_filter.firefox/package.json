@@ -1,0 +1,1 @@
+{"license": "", "description": "", "contributors": [], "author": "Rick_Zero", "url": "", "name": "facebook-post-filter", "dependencies": ["api-utils", "addon-kit"], "version": "1.7.5.rev300", "lib": "lib", "fullName": "Facebook Post Filter", "main": "main", "id": "jid0-3SnKoDaOUZXl5Z9xid8EenegGew", "icon": "data/FB.png"}
