@@ -8,56 +8,61 @@ chrome.runtime.onMessage.addListener(
                 "from the extension");
     if (request.greeting == "keyword"){
       //sendResponse({farewell: "goodbye"});
-		chrome.storage.sync.get('switcher',function(e){      
-			if(e['switcher']=='on'){
-				$(target).find("div._5jmm").each(function(index, element){
-						filter( $(element) );
-				}); 
-				$(target).find("li.uiStreamStory").each(function(index, element){
-						filter( $(element) );
-				}); 
-			}else if(e['switcher']==undefined){
-				chrome.storage.sync.set({'switcher':'on'});			  
-			};
-		});
+        dofilter();
 	}
 });
 
+function dofilter(){
+	chrome.storage.sync.get('switcher',function(e){
+		if(typeof e['switcher'] === "undefined" ){
+			chrome.storage.sync.set({'switcher':'on'});
+			dofilter();
+		} else if(e['switcher']=='on'){
+			$(target).find("div._5jmm").each(function(index, element){
+				filter( $(element) );
+			}); 
+			$(target).find("li.uiStreamStory").each(function(index, element){
+				filter( $(element) );
+			}); 
+		}
+	});
+}
 
-chrome.storage.sync.get('switcher',function(e){
-    if(e['switcher']=='on'){
-        $(target).find("div._5jmm").each(function(index, element){
-		        filter( $(element) );
-        }); 
-        $(target).find("li.uiStreamStory").each(function(index, element){
-		        filter( $(element) );
-        }); 
+function initial(){
+	chrome.storage.sync.get('switcher',function(e){
+		if(typeof e['switcher'] === "undefined"){
+			chrome.storage.sync.set({'switcher':'on'});
+			initial();
+		} else if(e['switcher']=='on'){
+			$(target).find("div._5jmm").each(function(index, element){
+				filter( $(element) );
+			}); 
+			$(target).find("li.uiStreamStory").each(function(index, element){
+				filter( $(element) );
+			}); 
 
-		new MutationObserver(function(mutations){
-            mutations.forEach(function(mutation) {
-                if( mutation.type !== "childList" ) return; 
+			new MutationObserver(function(mutations){
+				mutations.forEach(function(mutation) {
+					if( mutation.type !== "childList" ) return; 
 
-                for(var i=0; i<mutation.addedNodes.length; i++){
-                    var addedNode = mutation.addedNodes[i];
+					for(var i=0; i<mutation.addedNodes.length; i++){
+						var addedNode = mutation.addedNodes[i];
 
-                    if( typeof addedNode.tagName === "undefined" ) return; 
+						if( typeof addedNode.tagName === "undefined" ) return; 
 
-                    $(addedNode).find("div._5jmm").each(function(index, element){
-		                filter( $(element) );
-                    });
+						$(addedNode).find("div._5jmm").each(function(index, element){
+							filter( $(element) );
+						});
 
-                    if( addedNode.classList.contains("uiStreamStory") ){
-                        filter( $(addedNode) );
-                    }
-                }
-            });    
-		}).observe(target, config);
-    }else if(e['switcher']==undefined){
-        chrome.storage.sync.set({'switcher':'on'});
-          
-    };
-})
-
+						if( addedNode.classList.contains("uiStreamStory") ){
+							filter( $(addedNode) );
+						}
+					}
+				});    
+			}).observe(target, config);
+		}
+	});
+}
 
 function filter($element){
     chrome.storage.sync.get('block.keyword',function(r){
@@ -77,6 +82,8 @@ function filter($element){
         }
     })
 }
+
+initial();
 
 /*
 function mark(){
