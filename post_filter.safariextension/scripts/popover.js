@@ -1,23 +1,34 @@
+var settings = safari.extension.globalPage.contentWindow.settings;
+var FFMessages = safari.extension.globalPage.contentWindow.FFMessages;
+settings.action = 'filter'; // only use filter now
+
 var _gaq = _gaq || [];
 _gaq.push(['_setAccount', 'UA-43248623-2']);
 _gaq.push(['_trackPageview']);
 
 (function() {
-    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-    ga.src = 'https://ssl.google-analytics.com/ga.js';
-    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+  ga.src = 'https://ssl.google-analytics.com/ga.js';
+  var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  
 })();
 
 function trackButton(e) {
     _gaq.push(['_trackEvent', e.target.id, 'clicked']);
 }
 
-
-var settings = safari.extension.globalPage.contentWindow.settings;
-var FFMessages = safari.extension.globalPage.contentWindow.FFMessages;
-settings.action = 'filter'; // only use filter now
+var trimKeywordStr = function(keyword_str){
+	return keyword_str.split("\n")
+        .map(function(keyword){ return keyword.trim();})
+        .filter(function(keyword){
+            return (keyword !=="");
+        }).join("\n");
+}
 
 var updateStatus = function(){
+    settings["filter.keyword"] = trimKeywordStr(settings["filter.keyword"]);
+    settings["mark.keyword"] = trimKeywordStr(settings["mark.keyword"]);
+
     $('#textarea_filter').val(settings["filter.keyword"]);
     $('#textarea_mark').val(settings["mark.keyword"]); 
     //update the switcher status
@@ -38,12 +49,15 @@ $(document).ready(function(){
     $('#clear').html(FFMessages.button_clear);
     $('#a_chenghsi').html(FFMessages.company_name);
 
-    //changes setting according to settings
+    //change UIsetting according to settings
     updateStatus();
     
+    // bind textarea change event
     $("textarea").bind("change", function(e){
-        settings["filter.keyword"]=$('#textarea_filter').val();
-        settings["mark.keyword"]=$('#textarea_mark').val();
+        settings["filter.keyword"]=trimKeywordStr($('#textarea_filter').val());
+        $('#textarea_filter').val(settings["filter.keyword"]);
+        settings["mark.keyword"]=trimKeywordStr($('#textarea_mark').val());
+        $('#textarea_mark').val(settings["mark.keyword"]);
     });
 
     //create event handler for clear keyword button
@@ -59,20 +73,17 @@ $(document).ready(function(){
 
     //create event handler for click submit(save) button
     $('#submit').click(function(e){
-	    var keywords = $('#textarea_' + settings.action).val().split("\n")
-                .map(function(keyword){ return keyword.trim();})
-                .filter(function(keyword){
-		            if (keyword !==""){
-			            keyword=keyword.replace(/\ /g,'').toLowerCase();
-			            if (keyword!==""){
-			                _gaq.push(['_trackEvent', 'KeywordChanged', keyword]);
-			            }
-                        return true;
-		            }
-                    else return false;
-                });
+	    var keywords = trimKeywordStr($('#textarea_' + settings.action).val());
+        keywords.split("\n").forEach(function(keyword){
+		    if (keyword !==""){
+			    keyword=keyword.replace(/\ /g,'').toLowerCase();
+			    if (keyword!==""){
+			        _gaq.push(['_trackEvent', 'KeywordChanged', keyword]);
+			    }
+		    }
+        });
         trackButton(e);
-        settings["filter.keyword"]=keywords.join("\n");
+        settings["filter.keyword"]=keywords;
         //settings["mark.keyword"]=$('#textarea_mark').val();
 
         //update settings

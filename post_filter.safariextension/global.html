@@ -87,10 +87,7 @@
           switch(event.command){
           case 'posterfilter_add_keyword': 
               if( event.userInfo){
-                  var keywords = settings["filter.keyword"].split("\n");
-                  keywords.push(event.userInfo);
-                  keywords = keywords.filter(function(v){ return (v.trim()!='') });
-	              settings["filter.keyword"] = keywords.join("\n");
+	              settings["filter.keyword"] += "\n" + event.userInfo;
                   safari.extension.popovers.forEach(function(popover){
                       if(popover.identifier === "PostFilterPopover"){
                           popover.contentWindow.updateStatus();
