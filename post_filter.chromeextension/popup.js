@@ -13,6 +13,14 @@ function trackButton(e) {
     _gaq.push(['_trackEvent', e.target.id, 'clicked']);
   };
 
+var trimKeywordStr = function(keyword_str){
+	return keyword_str.split("\n")
+        .map(function(keyword){ return keyword.trim();})
+        .filter(function(keyword){
+            return (keyword !=="");
+        }).join("\n");
+}
+
 $(document).ready(function(){
     // static international messages
     $('.panel-body div p').html(chrome.i18n.getMessage("setting_note"));
@@ -21,7 +29,7 @@ $(document).ready(function(){
     $('div.copyright p a').html(chrome.i18n.getMessage("company_name"));
 
     chrome.storage.sync.get('block.keyword',function(r){
-        $('textarea').html(r['block.keyword']);
+        $('textarea').html(trimKeywordStr(r['block.keyword']));
     });
     
 	chrome.storage.sync.get('switcher',function(e){
@@ -52,10 +60,10 @@ $(document).ready(function(){
 		};  
 	
 		trackButton(e);
-        chrome.storage.sync.set({'block.keyword':$('textarea').val()},function(){
+        chrome.storage.sync.set({'block.keyword':trimKeywordStr($('textarea').val())},function(){
             chrome.storage.sync.get('block.keyword',function(r){
 			
-                $('textarea').html(r['block.keyword']);
+                $('textarea').html(trimKeywordStr(r['block.keyword']));
                 chrome.tabs.reload();
                 window.close();
             })    
@@ -63,7 +71,7 @@ $(document).ready(function(){
     })
 	
     $('#switcher').click(function(e){
-	trackButton(e);
+	    trackButton(e);
         chrome.storage.sync.get('switcher',function(e){
             if(e['switcher']=='on'){
                 $('#switcher').html(chrome.i18n.getMessage("button_start"));
@@ -99,12 +107,6 @@ $(document).ready(function(){
 	$('#clear').click(function(e){
 		trackButton(e);
         $('textarea').html("");
-		chrome.storage.sync.set({'block.keyword':$('textarea').val()},function(){
-            chrome.storage.sync.get('block.keyword',function(r){			
-                $('textarea').html(r['block.keyword']);
-                //chrome.tabs.reload();
-                //window.close();
-            })    
-        });
+        chrome.storage.sync.set({'block.keyword':$('textarea').val()});
     });
 })
