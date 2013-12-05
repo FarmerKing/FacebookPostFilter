@@ -26,6 +26,6 @@
         "message": "Filter out the \"%s\" using FB Post Filter"
     },
     "notice_restart": {
-        "message": ""
+        "message": "Start after reflesh the page"
     }
 }

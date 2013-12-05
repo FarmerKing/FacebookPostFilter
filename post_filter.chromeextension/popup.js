@@ -14,6 +14,7 @@ function trackButton(e) {
   };
 
 var trimKeywordStr = function(keyword_str){
+    if(typeof keyword_str === 'undefined') return "";
 	return keyword_str.split("\n")
         .map(function(keyword){ return keyword.trim();})
         .filter(function(keyword){
@@ -33,10 +34,12 @@ $(document).ready(function(){
     });
     
 	chrome.storage.sync.get('switcher',function(e){
-        if(e['switcher']=='on'){
+        if(e['switcher']==='on'){
             $('#switcher').html(chrome.i18n.getMessage("button_stop"));
-        }else if(e['switcher']=='off'){
+        }else if(e['switcher']==='off'){
             $('#switcher').html(chrome.i18n.getMessage("button_start"));
+        }else{
+            $('#switcher').html(chrome.i18n.getMessage("button_stop"));
         }
     });
 	/*
@@ -79,6 +82,9 @@ $(document).ready(function(){
             }else if(e['switcher']=='off'){
                 $('#switcher').html(chrome.i18n.getMessage("button_stop"));
                 chrome.storage.sync.set({'switcher':'on'});
+            }else{
+                $('#switcher').html(chrome.i18n.getMessage("button_start"));
+                chrome.storage.sync.set({'switcher':'off'});
             }
 			chrome.tabs.reload();
             window.close();
