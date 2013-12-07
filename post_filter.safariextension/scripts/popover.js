@@ -108,4 +108,9 @@ $(document).ready(function(){
 
         safari.self.hide()
     });
+
+    //create event when clicking anchor
+    $("#a_chenghsi").click(function(){
+        safari.application.openBrowserWindow().activeTab.url = "http://chenghsi.com";
+    });
 });

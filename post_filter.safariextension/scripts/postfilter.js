@@ -38,9 +38,17 @@
             var keyword = _settings['filter.keyword'].trim().split("\n");
             for (var i = 0; i<keyword.length; i++) {
                 if (keyword[i]==="") continue; 
+                if( $element.find('.userContent:Contains("' + keyword[i] + '"), \
+                                  .actorName:Contains("' + keyword[i] + '"), \
+                                  ._5pbw:Contains("' + keyword[i] + '")' ).length > 0 ){
+                                      $element.addClass("FP-filter");
+                                      $element.fadeOut();  break;
+                                  }
+/*
                 if( $element.is(':Contains("' + keyword[i] + '")') ){ 
                     $element.addClass("FP-filter");
                     $element.fadeOut();  break;}
+*/
             }
         }
     }
