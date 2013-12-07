@@ -35,21 +35,25 @@
                 </label>
             </ul>
             <div id="filter_mes" class="alert alert-danger">
-                <p>請輸入在臉書的動態消息上，你不想看到貼文的主要關鍵字唷!<br />(例如：你不想看到 "黃色小鴨" 的貼文，則輸入「黃色小鴨」)，<br />則有 "黃色小鴨" 關鍵字的貼文就消失啦!!</p>
+                <p data-l10n-id="setting_note"></p>
             </div>
     		<div id="marker_mes" class="alert alert-success" style="display: none;">
-                <p>請輸入在臉書的動態消息上，你想看到貼文的主要關鍵字唷!<br />(例如：你想看到 "黃色小鴨" 的貼文，則輸入「黃色小鴨」)，<br />則有 "黃色小鴨" 關鍵字的貼文就出現啦!!</p>
+                <p></p>
             </div>
             <textarea class="form-control" id="text" cols="30" rows="10"></textarea>
             <div class="btn-group btn-group-justified">
-                <a class="btn btn-primary" id="save">儲存</a>
+                <a class="btn btn-primary" id="save" data-l10n-id="button_save"></a>
                 <a class="btn btn-default" id="switcher"></a>
-                <a class="btn btn-default" id="clear">清空</a>
+                <a class="btn btn-default" id="clear" data-l10n-id="button_clear"></a>
             </div>
         </div>
     </div>
+    <div style="display: none;">
+        <p id="button_start" data-l10n-id="button_start"></p>
+        <p id="button_stop" data-l10n-id="button_stop"></p>
+    </div>
 	<div class="copyright">
-       <p class="text-center"><!--author： --><a href="http://about.me/linroex" target="_blank"><font size="1">Xi-Zhe Lin</font></a>, <a target="_blank" href="https://www.facebook.com/profile.php?id=100000424122478"><font size="1">Chang Yi</font></a>, <a target="_blank" href="https://www.facebook.com/yixingc"><font size="1">Ian Shen</font></a>, <a href="https://www.facebook.com/fatminmin" target="_blank"><font size="1">Chieh-Min Wang</font></a>, <a href="https://www.facebook.com/yupog2003" target="_blank"><font size="1">Yu-Po Wu</font></a><br><!--powered by --><a href="http://chenghsi.com/" target="_blank">Chenghsi.com</a><!--welcome report to --></p> 
+       <p class="text-center"><!--powered by --><a href="http://chenghsi.com/" target="_blank"data-l10n-id="company_name"></a><!--welcome report to --></p> 
     </div>
 </body>
 

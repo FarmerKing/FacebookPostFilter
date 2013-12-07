@@ -4,6 +4,7 @@ var widget = require("sdk/widget");
 var tabs = require('sdk/tabs');
 var ss = require("sdk/simple-storage");
 var cm = require("sdk/context-menu");
+var _ = require("sdk/l10n").get;
 
 function upload(){
     for each (var tab in tabs){
@@ -27,15 +28,17 @@ var panel = require("sdk/panel").Panel({
     contentScriptFile: data.url("popup.js")
 });
 
+
+
 cm.Item({
-    label: "FB動態殺手 篩掉「」",
+    label: _("contextmenu_addfilterkeyword"),
     image: data.url("FB.png"),
     context: [cm.URLContext("https://www.facebook.com/*"),
               cm.SelectionContext()],
     contentScript: 'self.on("context", function(node, data){'+
                    'var text = document.getSelection().toString();'+
                    'if(text.length > 10) text = text.substring(0, 10)+"... ";'+
-                   'return "FB動態殺手 篩掉「" + text + "」";'+
+                   'return "' + _("contextmenu_addfilterkeyword1") + '"+ text + "'+ _("contextmenu_addfilterkeyword2") + '"' +
                    '});'+
                    'self.on("click", function(node, data){'+
                    'self.postMessage(document.getSelection().toString());'+

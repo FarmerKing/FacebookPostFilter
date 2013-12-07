@@ -8,6 +8,8 @@ var filter_mes = document.getElementById('filter_mes');
 var nav_marker = document.getElementById('nav_marker');
 var marker = document.getElementById('marker');
 var marker_mes = document.getElementById('marker_mes');
+var text_button_start = document.getElementById('button_start').innerHTML;
+var text_button_stop = document.getElementById('button_stop').innerHTML;
 
 function mode_state(){
     if(filter.checked){
@@ -22,7 +24,7 @@ function save_opt(){
 }
 
 function change(){
-    self.port.emit("save", text.value, (switcher.innerHTML!="停用"), mode_state());
+    self.port.emit("save", text.value, (switcher.innerHTML!== text_button_stop), mode_state());
 }
 
 function clear_text(){
@@ -47,9 +49,9 @@ function onShow(list, state, mode){
     text.value = list;
     
     if(state){
-        switcher.innerHTML = "停用";
+        switcher.innerHTML = text_button_stop;
     }else{
-        switcher.innerHTML = "啟用";
+        switcher.innerHTML = text_button_start;
     }
     
     filter.checked = (mode=="filter");
