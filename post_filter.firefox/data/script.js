@@ -158,7 +158,7 @@ function mark(text){
                 var or_html = e.outerHTML;
                 var mark_html;
                 var newKey = key.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-                eval("var strReg = /"+newKey+"/g;");
+                var strReg = new RegExp(newKey, "g");
                 var repstr = "<span class=\"mark\">"+newKey+"</span>";
 
                 for(var j=0; j<or_html.length; j++){
@@ -174,7 +174,6 @@ function mark(text){
                     or_html.substring(list[j]+1, list[j+1]).replace(strReg, repstr)+
                     or_html.substring(list[j+1], list[j+2]+1);
                 }
-                e.outerHTML = mark_html;
             });
 			
 			$(".FPF-b:not(.FPF-a):contains('" + key + "')")

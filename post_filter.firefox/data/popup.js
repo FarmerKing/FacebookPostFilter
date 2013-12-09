@@ -1,6 +1,7 @@
 var text = document.getElementById('text');
 var save = document.getElementById('save');
-var switcher = document.getElementById('switcher');
+var switcher_start = document.getElementById('switcher_start');
+var switcher_stop = document.getElementById('switcher_stop');
 var cl = document.getElementById('clear');
 var nav_filter = document.getElementById('nav_filter');
 var filter = document.getElementById('filter');
@@ -8,8 +9,6 @@ var filter_mes = document.getElementById('filter_mes');
 var nav_marker = document.getElementById('nav_marker');
 var marker = document.getElementById('marker');
 var marker_mes = document.getElementById('marker_mes');
-var text_button_start = document.getElementById('button_start').innerHTML;
-var text_button_stop = document.getElementById('button_stop').innerHTML;
 
 function mode_state(){
     if(filter.checked){
@@ -24,7 +23,7 @@ function save_opt(){
 }
 
 function change(){
-    self.port.emit("save", text.value, (switcher.innerHTML!== text_button_stop), mode_state());
+    self.port.emit("save", text.value, (this.id !== "switcher_stop"), mode_state());
 }
 
 function clear_text(){
@@ -49,9 +48,11 @@ function onShow(list, state, mode){
     text.value = list;
     
     if(state){
-        switcher.innerHTML = text_button_stop;
+        switcher_start.style.display="none";
+        switcher_stop.style.display=null;        
     }else{
-        switcher.innerHTML = text_button_start;
+        switcher_stop.style.display="none";
+        switcher_start.style.display=null;
     }
     
     filter.checked = (mode=="filter");
@@ -62,7 +63,8 @@ function onShow(list, state, mode){
 
 self.port.on("show", onShow);
 save.onclick = save_opt;
-switcher.onclick = change;
+switcher_start.onclick = change;
+switcher_stop.onclick = change;
 cl.onclick = clear_text;
 nav_filter.onclick = mode_ch;
 nav_marker.onclick = mode_ch;
