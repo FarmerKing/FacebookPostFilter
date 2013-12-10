@@ -1,10 +1,10 @@
 {
     "license": "", 
-    "name": "post-filter", 
+    "description": "", 
     "contributors": [], 
     "author": "chenghsi", 
     "url": "http://postfilter.net", 
-    "description": "", 
+    "name": "post-filter", 
     "dependencies": [
         "api-utils", 
         "addon-kit"
@@ -13,6 +13,6 @@
     "lib": "lib", 
     "fullName": "FB Post Filter", 
     "main": "main", 
-    "id": "jid1-1zxEAPKx5ohrJA", 
+    "id": "jid1-RCBXaFwSeLLXIg", 
     "icon": "data/FB.png"
 }
