@@ -7,17 +7,17 @@
         "message": "Please enter the keywords you do not want to see on facebook. For example, if you don't want to see any posts about Justin Bieber, then enter \"Justin Bieber\" as the keyword. Then all posts containing the word \"Justin Bieber\" will disappear.",
         "description": "Used as the description note in the setting.html"
     },
-    "button_save": {
-        "message": "Save"
+    "button_add": {
+        "message": "Add Keyword"
     },
-    "button_stop": {
-        "message": "Stop"
+    "option_disable": {
+        "message": "Disable"
     },
-    "button_start": {
-        "message": "Start"
+    "option_enable": {
+        "message": "Enable"
     },
-    "button_clear": {
-        "message": "Clear"
+    "hint_addkeyword": {
+        "message": "Enter a keyword..."
     },
     "company_name": {
         "message": "ChengHsi.com"

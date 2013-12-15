@@ -3,7 +3,7 @@
   "content_security_policy": "script-src 'self' https://ssl.google-analytics.com; object-src 'self'",
   "name": "__MSG_extName__",
   "description": "This Extension can use keyword to filter you facebook post",
-  "version": "1.0.2",
+  "version": "2.0.0",
 
   "default_locale": "en",
 
@@ -11,6 +11,7 @@
 
   "permissions": [
     "https://www.facebook.com/*",
+    "webNavigation",
     "storage",
     "tabs",
 	"contextMenus"],
@@ -24,13 +25,14 @@
     "jquery-1.10.2.min.js"
   ],
 
-  "browser_action":{
-    "default_icon":"icon48.png",
+  "page_action":{
+    "default_icon": "icon16.png",
     "default_popup":"setting.html",
     "default_title":"Facebook Post Filter"
   },
 
   "background": {
-	"scripts": [ "background.js"]
+	"scripts": [ "background.js"],
+    "persistent": false
   }
 }

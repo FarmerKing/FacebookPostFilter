@@ -7,17 +7,17 @@
         "message": "請輸入在臉書的動態消息上，你不想看到貼文的主要關鍵字唷！（例如：你不想看到「黃色小鴨」的貼文，則輸入「黃色小鴨」），則有「黃色小鴨」關鍵字的貼文就消失啦！",
         "description": "Used as the description note in the setting.html"
     },
-    "button_save": {
-        "message": "儲存"
+    "button_add": {
+        "message": "新增關鍵字"
     },
-    "button_stop": {
+    "option_disable": {
         "message": "停用"
     },
-    "button_start": {
+    "option_enable": {
         "message": "啟用"
     },
-    "button_clear": {
-        "message": "清空"
+    "hint_addkeyword": {
+        "message": "輸入關鍵字⋯⋯"
     },
     "company_name": {
         "message": "丞希綠色資訊"
