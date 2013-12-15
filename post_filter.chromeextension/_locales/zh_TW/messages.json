@@ -16,6 +16,9 @@
     "option_enable": {
         "message": "啟用"
     },
+    "hide_note_alert": {
+        "message": "不再出現此訊息"
+    },
     "hint_addkeyword": {
         "message": "輸入關鍵字⋯⋯"
     },

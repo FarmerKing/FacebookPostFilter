@@ -7,8 +7,14 @@
     <style>
         body{
             width:500px;
-            
         }
+
+        button.close {
+            position: fixed;
+            left: 465px;
+            top: 59px;
+        }
+
         .btn-group,.notice{
             margin-top:5px;
         }
@@ -88,6 +94,7 @@
         <div class="panel-body">
             <div class="alert alert-success">
                 <p></p>
+                <button type="button" class="close" alt="test" >×</button>
             </div>
 
             <form role="form" class="form-inline" id="form_switchers">
@@ -100,7 +107,6 @@
             </form>
 
             <div id="div_main">
-
                 <form class="form-inline" role="form">
                     <div class="form-group" style="display:inline-block">
                         <label class="sr-only" for="input_keyword">Keyword</label>

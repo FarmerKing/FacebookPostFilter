@@ -12,21 +12,26 @@ function trackButton(e) {
     _gaq.push(['_trackEvent', e.target.id, 'clicked']);
 };
 
+var filter_note_show = window.localStorage["postfilter-popup-filternote"] ? JSON.parse(window.localStorage["postfilter-popup-filternote"]) : true;
+
 // get the settings from background page
 chrome.runtime.getBackgroundPage(function(backgroundPage){
     var switcher = backgroundPage.Switcher.get();
 
     $(document).ready(function(){
-        //change UIsetting according to settings
-        updateStatus(switcher);
-
         $("input:radio[name='option_switcher']").click(event_toggleSwitcher);
         $("#submit_keyword").click(event_addBlockKeyword);
         $("#input_keyword").submit(event_addBlockKeyword);
         $("#trash_li a").click(blockKeywordUI.clear);
 
-        //focus input
-        $("#input_keyword").focus();
+        $("button.close").click(function(){
+            filter_note_show = false;
+            window.localStorage.setItem("postfilter-popup-filternote", "false");
+            $('.panel-body div.alert-success').hide();
+        });
+
+        //change UIsetting according to settings
+        updateStatus(switcher);
     })
 });
 
@@ -72,24 +77,32 @@ var blockKeywordUI = function(){
 //update UI
 var updateStatus = function(switcher){
     // static international messages
-    $('.panel-body div p').html(chrome.i18n.getMessage("setting_note"));
     $('div.copyright p a').html(chrome.i18n.getMessage("company_name"));
     $("#submit_keyword").html(chrome.i18n.getMessage("button_add"));
     $("#input_keyword").prop("placeholder", chrome.i18n.getMessage("hint_addkeyword"));
     $("#option_enable + span").html(chrome.i18n.getMessage("option_enable"));
     $("#option_disable + span").html(chrome.i18n.getMessage("option_disable"));
 
-    //update the switcher status
-    if(switcher==='off'){
-        $("#option_disable").prop("checked",true);
-        $("#div_main").hide();
+    if(filter_note_show){
+        $('.panel-body div.alert-success p').html(chrome.i18n.getMessage("setting_note"));
+        $('.panel-body div.alert-success').show();
     }else{
-        $("#option_enable").prop("checked",true);
-        $("#div_main").show();
+        $('.panel-body div.alert-success').hide();
     }
 
     // print ui
     blockKeywordUI.init();
+
+    //update the switcher status
+    if(switcher==='off'){
+        $("#option_disable").prop("checked",true);
+        $("#div_main").hide();
+        $("#option_disable").focus();
+    }else{
+        $("#option_enable").prop("checked",true);
+        $("#div_main").show();
+        $("#input_keyword").focus();
+    }
 };
 
 var event_addBlockKeyword = function(e){

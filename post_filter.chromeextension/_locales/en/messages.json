@@ -16,6 +16,9 @@
     "option_enable": {
         "message": "Enable"
     },
+    "hide_note_alert": {
+        "message": "Make this message no longer appear"
+    },
     "hint_addkeyword": {
         "message": "Enter a keyword..."
     },
