@@ -5,7 +5,6 @@
 var PF_STORAGE_SWITCHER = 'postfilter-switcher',
     PF_STORAGE_BLOCKKEYWORD = 'postfilter-block.keyword';
 
-//console.log("action(" + settings.action + ") switcher(" + settings["switcher"] + ")");
 var Switcher = function(){
     var switcher = window.localStorage[PF_STORAGE_SWITCHER] ? window.localStorage[PF_STORAGE_SWITCHER] : "on",
         saveSettings = function(){
@@ -118,6 +117,7 @@ chrome.runtime.onMessage.addListener(
 
 var removeBlockKey = function( removeKey ){
     BlockKeywords.removeKey(removeKey);
+    BlockKeywords.resetCounter();
 	chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
 		chrome.tabs.sendMessage(tabs[0].id, 
                                 {"name": "removeBlockKey", 
@@ -181,19 +181,22 @@ var trimKeywordStr = function(keyword_str){
         }).join("\n");
 }
 
-var clickHandler = function(e) {
-	if(typeof e.selectionText !== "undefined" 
-       && e.selectionText.trim() !== ''){
-        addBlockKey(e.selectionText.trim());
-	}
-}
-
-
-var button = chrome.contextMenus.create({
+chrome.contextMenus.create({
+    "id": "contextmenu_addkeyword",
 	"title": chrome.i18n.getMessage("contextmenu_addfilterkeyword"),
-	"contexts" : [ "selection" ],
-	"onclick" : clickHandler
+	"contexts" : [ "selection" ]
 });
+
+chrome.contextMenus.onClicked.addListener(function(info, tab) {
+    if( info.menuItemId === "contextmenu_addkeyword"){
+	    if(typeof info.selectionText !== "undefined" 
+           && info.selectionText.trim() !== ''){
+            addBlockKey(info.selectionText.trim());
+	    }
+    }
+});
+
+
 
 /******
  ** Event listener 

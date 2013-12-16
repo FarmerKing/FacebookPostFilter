@@ -19,8 +19,14 @@
                 break;
 
             case 'removeBlockKey': 
+                //reverse all filter effect 
+                reverseAction(prevSettings.action);
+
+                //use new block list to process all 
+                processAll($(document.body),settings["block.keyword"]);
+
                 sendResponse({"name":"done"});
-                reverseAction(prevSettings.action,messageEvent.message);
+
                 break;
 
             case 'clearBlockKey': 
@@ -97,16 +103,8 @@
     /****************
      * undo the previous status
      ****/
-    var reverseAction = function(oriAction, keyword){
+    var reverseAction = function(oriAction){
         $(".FP-filter").each(function(i, domItem){
-            if( typeof keyword !== "undefined")
-                if( typeof keyword.name !== "undefined" && keyword.name.trim() !== "" ){
-                    if( $(domItem).find('.userContent:contains("' + keyword.name + '"), \
-                                        .actorName:contains("' + keyword.name + '"), \
-                                        ._5pbw:contains("' + keyword.name + '")' ).length  <= 0 ){
-                                            return ;
-                                        }
-                }
             $(domItem).fadeIn();
             $(domItem).removeClass("FP-filter");
         });
