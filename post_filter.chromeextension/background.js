@@ -89,11 +89,12 @@ var BlockKeywords = function(){
                     return false;
                 }
             });
+            saveSettings();
         }
     };
 }();
 
-// listen to message from script.js
+// listen to the message sent from script.js
 chrome.runtime.onMessage.addListener(
     function(messageEvent, sender, sendResponse) {
         if( typeof messageEvent.name === "undefined") return; 
@@ -115,71 +116,57 @@ chrome.runtime.onMessage.addListener(
         }
     });
 
+
+/**
+ * Functions that are used in popup.js and other action handler
+ */
+var notifyTabScript = function(name, message, settings,func_response){
+	chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+		chrome.tabs.sendMessage(tabs[0].id, 
+                                {"name": name,
+                                 "message": message,
+                                 "settings": settings},
+                                func_response);
+	});
+}; 
+
 var removeBlockKey = function( removeKey ){
     BlockKeywords.removeKey(removeKey);
     BlockKeywords.resetCounter();
-	chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-		chrome.tabs.sendMessage(tabs[0].id, 
-                                {"name": "removeBlockKey", 
-                                 "message": {"name":removeKey}, 
-                                 "settings": {"switcher": Switcher.get(), 
-                                              "block.keyword": BlockKeywords.get()}}, 
-                                function(response) {
-		                        });
-	});
+    notifyTabScript("removeBlockKey", 
+                    {"name":removeKey}, 
+                    {"switcher": Switcher.get(), 
+                     "block.keyword": BlockKeywords.get()},
+                    null);
 };
 
 var clearBlockKey = function( ){
     BlockKeywords.clear();
-	chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-		chrome.tabs.sendMessage(tabs[0].id, 
-                                {"name": "clearBlockKey", 
-                                 "settings": {"switcher": Switcher.get(), 
-                                              "block.keyword": BlockKeywords.get()}}, 
-                                function(response) {
-		                        });
-	});
+    notifyTabScript("clearBlockKey", 
+                    null, 
+                    {"switcher": Switcher.get(), 
+                     "block.keyword": BlockKeywords.get()},
+                    null);
 };
 
 var addBlockKey = function( addedKey ){
     if( !BlockKeywords.addKey(addedKey) ) return false;
-	chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-		chrome.tabs.sendMessage(tabs[0].id, 
-                                {"name": "addBlockKey", 
-                                 "message": {"name": addedKey},
-                                 "settings": {"switcher": Switcher.get(), 
-                                              "block.keyword": BlockKeywords.get()}}, 
-                                function(response) {
-		                        });
-	});
+    notifyTabScript("addBlockKey", 
+                    {"name": addedKey},
+                    {"switcher": Switcher.get(), 
+                     "block.keyword": BlockKeywords.get()},
+                    null);
     return true;
 };
 
 var toggleSwitcher = function(){
     Switcher.toggle();
-	chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-		chrome.tabs.sendMessage(tabs[0].id, 
-                                {"name": "toggleSwitcher", 
-                                 "settings": {"switcher": Switcher.get(),
-                                              "block.keyword": BlockKeywords.get()}}, 
-                                function(response) {
-		                        });
-	});
+    notifyTabScript("toggleSwitcher", 
+                    null,
+                    {"switcher": Switcher.get(), 
+                     "block.keyword": BlockKeywords.get()},
+                    null);
 };
-
-var trimKeywordStr = function(keyword_str){
-    if(Array.isArray(keyword_str)){ 
-        return keyword_str.filter(function(keyword){
-            return (keyword.trim() !=="");
-        }).join("\n");
-    }
-
-	return keyword_str.split("\n")
-        .map(function(keyword){ return keyword.trim();})
-        .filter(function(keyword){
-            return (keyword !=="");
-        }).join("\n");
-}
 
 chrome.contextMenus.create({
     "id": "contextmenu_addkeyword",
@@ -208,12 +195,6 @@ chrome.runtime.onInstalled.addListener(function(details) {
     var init = function(){
         BlockKeywords.save();
         Switcher.save();
-        chrome.tabs.query({"url":"*//www.facebook.com/*"}, function(tabs){ 
-            tabs.forEach(function(tab){ 
-                chrome.tabs.executeScript(tab.id, {file: "script.js"});
-                chrome.pageAction.show(tab.id);
-            });
-        });
     };
 
     init();
@@ -241,9 +222,31 @@ chrome.runtime.onInstalled.addListener(function(details) {
 });
 
 // Listen for any changes to the URL of any tab. only show the page action when the url's hostname is www.facebook.com
-chrome.webNavigation.onCompleted.addListener(function (details) {
-    chrome.pageAction.show(details.tabId);
-}, {url: [{hostSuffix: 'www.facebook.com'}]});
+chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
+    if( typeof changeInfo.status !== "undefined" &&
+        changeInfo.status === "complete" ){
+            var tabLocation = document.createElement('a');
+            tabLocation.href= tab.url;
+            if(typeof tabLocation.hostname === "undefined" ||
+               tabLocation.hostname !== "www.facebook.com" || 
+               typeof tabLocation.pathname === "undefined" || 
+               tabLocation.pathname !== "/"
+              ){
+                  BlockKeywords.resetCounter();
+                  notifyTabScript("stop", null, {"switcher": Switcher.get(), 
+                                                 "block.keyword": BlockKeywords.get()}, null);
+                  chrome.pageAction.hide(tabId); return;
+              }else{
+                  BlockKeywords.resetCounter();
+                  notifyTabScript("init",                    
+                                  null, 
+                                  {"switcher": Switcher.get(), 
+                                   "block.keyword": BlockKeywords.get()},
+                                  null);
+                  chrome.pageAction.show(tabId);
+              }
+        }
+});
 
 // listen for event when suspend extension
 chrome.runtime.onSuspend.addListener(function(){

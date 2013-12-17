@@ -1,3 +1,6 @@
+/**
+ * content-script: this script is loaded at facebook content page (manifest.json)
+ */
 (function(){
     var settings = settings || {};
     var target = document.body;
@@ -35,6 +38,8 @@
                 break;
 
             case 'toggleSwitcher': 
+                init(settings);
+/*
                 postObserver.disconnect();
                 if(  settings['switcher'] === 'on'){
                     postObserver.observe(target, config);
@@ -43,9 +48,19 @@
                 reverseAction(prevSettings.action);
                 if(  settings['switcher'] === 'on'){
                     processAll($(document.body));
-                }
+                }*/
 
                 sendResponse({"name":"done"});
+                break;
+            case 'stop': 
+                sendResponse({"name":"done"});
+                postObserver.takeRecords();
+                postObserver.disconnect();
+                reverseAction(prevSettings.action);
+                break;
+            case 'init': 
+                sendResponse({"name":"done"});
+                init(settings);
                 break;
             }
         });
@@ -73,23 +88,20 @@
         // each object in this array is {"name": xx, "count":xx }
         keywords.forEach(function(keyword){
 			if (keyword.name.trim() !== ""){
-                if( _filter($element,keyword.name.trim()) )
-                    return false;
+                _filter($element,keyword.name.trim());
 			}
         });
     }
 
     function _filter($element, keyword){
-        if( $element.find('.userContent:contains("' + keyword + '"), \
-                          .actorName:contains("' + keyword + '"), \
-                          ._5pbw:contains("' + keyword + '")' ).length > 0 ){
-                              $element.addClass("FP-filter");
-                              $element.fadeOut(); 
-                              chrome.runtime.sendMessage({"name": "addCount", "message":keyword},function(theMessageEvent) {
-                              });
-                              return true;
-                          }
-        return false;
+        $element.find('.userContent:contains("' + keyword + '"), \
+                      .actorName:contains("' + keyword + '"), \
+                      ._5pbw:contains("' + keyword + '")' )
+            .closest("div._5jmm")
+            .each(function(i,dom){
+                chrome.runtime.sendMessage({"name": "addCount", "message":keyword});
+            })
+            .addClass("FP-filter").fadeOut();
     }
 
     var processAll = function($objectCollection, keywords){
@@ -99,33 +111,28 @@
         }); 
     };
 
+    var init = function(_settings){
+        settings = _settings;
+
+        postObserver.takeRecords();
+        postObserver.disconnect();
+        reverseAction(_settings.action);
+
+        if(  settings['switcher'] === 'on'){
+            processAll($(document.body));
+            postObserver.observe(target, config);
+        }
+    };
+
 
     /****************
      * undo the previous status
      ****/
     var reverseAction = function(oriAction){
         $(".FP-filter").each(function(i, domItem){
-            $(domItem).fadeIn();
-            $(domItem).removeClass("FP-filter");
+            $(domItem).removeClass("FP-filter").fadeIn();
         });
     };
-
-    $(function(){
-        // get the settings from background js
-        chrome.runtime.sendMessage({"name": "getSettings"}, function(theMessageEvent) {
-            settings = theMessageEvent.settings;
-            //before any inserted post, there're some initially loaded post 
-            processAll($(document.body));
-            //create mutation listener
-
-            if(  settings['switcher'] === 'on'){
-	            postObserver.observe(target, config);
-            }
-            else
-	            postObserver.disconnect();
-        });
-    });
-    
 })();
 
 

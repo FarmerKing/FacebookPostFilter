@@ -23,6 +23,7 @@ chrome.runtime.getBackgroundPage(function(backgroundPage){
         $("#submit_keyword").click(event_addBlockKeyword);
         $("#input_keyword").submit(event_addBlockKeyword);
         $("#trash_li a").click(blockKeywordUI.clear);
+        $(".list-group").click(event_removeBlockKeyword);
 
         $("button.close").click(function(){
             filter_note_show = false;
@@ -44,16 +45,17 @@ var blockKeywordUI = function(){
             });
         },
         "addCount": function(_keyword,_count){
-            $('.list-group-item:contains("' + _keyword + '") span').html(_count);
+            $('.list-group-item:contains("' + _keyword + '") span.badge').html(_count);
         },
         "addAndSet": function(_keyword) {
             chrome.runtime.getBackgroundPage(function(backgroundPage){
                 if( backgroundPage.addBlockKey(_keyword) )
-                    $('<li class="list-group-item"><a href="#"></a><span class="badge"></span>'+
-                      _keyword +'</li>').appendTo(".list-group");
+                    $('<li class="list-group-item"><a href="#"></a><span class="badge">0</span><span class="keyword">'+
+                      _keyword +'<span></li>').appendTo(".list-group");
             });
         },
         "removeAndSet": function(_keyword) {
+            $('.list-group-item:contains("' + _keyword + '")').remove();
             chrome.runtime.getBackgroundPage(function(backgroundPage){
                 backgroundPage.removeBlockKey(_keyword);
             });
@@ -64,8 +66,8 @@ var blockKeywordUI = function(){
                 keywords_count.forEach(function( keyword ){
                     if( keyword.name.trim() !== ""){
                         $('<li class="list-group-item"><a href="#"></a><span class="badge">' +
-                          keyword.count + '</span>'+
-                          keyword.name +'</li>').appendTo(".list-group").click(event_removeBlockKeyword).find("a").click(event_removeBlockKeyword);
+                          keyword.count + '</span><span class="keyword">'+
+                          keyword.name +'</span></li>').appendTo(".list-group");
                     }
                 });
 
@@ -112,6 +114,9 @@ var event_addBlockKeyword = function(e){
 
     if(keyword === '') return; 
     blockKeywordUI.addAndSet(keyword);
+    $("#input_keyword").val("");
+
+    return false;
 }
 
 var event_toggleSwitcher = function(e){
@@ -123,20 +128,17 @@ var event_toggleSwitcher = function(e){
     chrome.runtime.getBackgroundPage(function(backgroundPage){
          backgroundPage.toggleSwitcher();
     });
+
+    return false;
 }
 
 var event_removeBlockKeyword = function(e){
-    if( this.tagName.toLowerCase() !== "li" ) return;
-    var keyword = "";
-    $(this).contents().each(function() {
-        if( this.nodeType == 3){
-            keyword = $(this).text();
-            return false;
-        }
-    });
+    if( e.target.tagName.toLowerCase() !== "a" ) return;
 
+    var keyword = $(e.target).nextAll("span.keyword").text();
     if(keyword === '') return; 
     blockKeywordUI.removeAndSet(keyword);
-    $(this).remove();
+
+    return false;
 }
 
