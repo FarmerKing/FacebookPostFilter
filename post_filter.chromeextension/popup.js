@@ -45,17 +45,21 @@ var blockKeywordUI = function(){
             });
         },
         "addCount": function(_keyword,_count){
-            $('.list-group-item:contains("' + _keyword + '") span.badge').html(_count);
+            $('span.keyword').filter(function(i){
+                return ($(this).html() === _keyword);
+            }).closest('.list-group-item').find('span.badge').html(_count);
         },
         "addAndSet": function(_keyword) {
             chrome.runtime.getBackgroundPage(function(backgroundPage){
                 if( backgroundPage.addBlockKey(_keyword) )
                     $('<li class="list-group-item"><a href="#"></a><span class="badge">0</span><span class="keyword">'+
-                      _keyword +'<span></li>').appendTo(".list-group");
+                      _keyword +'</span></li>').appendTo(".list-group");
             });
         },
         "removeAndSet": function(_keyword) {
-            $('.list-group-item:contains("' + _keyword + '")').remove();
+            $('span.keyword').filter(function(i){
+                return ($(this).html() === _keyword);
+            }).closest('.list-group-item').remove();
             chrome.runtime.getBackgroundPage(function(backgroundPage){
                 backgroundPage.removeBlockKey(_keyword);
             });
@@ -128,8 +132,6 @@ var event_toggleSwitcher = function(e){
     chrome.runtime.getBackgroundPage(function(backgroundPage){
          backgroundPage.toggleSwitcher();
     });
-
-    return false;
 }
 
 var event_removeBlockKeyword = function(e){

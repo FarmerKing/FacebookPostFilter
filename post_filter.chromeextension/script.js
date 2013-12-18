@@ -5,6 +5,7 @@
     var settings = settings || {};
     var target = document.body;
     var config = { childList: true, subtree: true };
+    var blockData = {}; //keyword-post dedupe mechanism
 
     Date.MutationObserver = window.WebKitMutationObserver || window.MutationObserver || window.MozMutationObserver || null; 
     if( !Date.MutationObserver ) return; 
@@ -39,17 +40,6 @@
 
             case 'toggleSwitcher': 
                 init(settings);
-/*
-                postObserver.disconnect();
-                if(  settings['switcher'] === 'on'){
-                    postObserver.observe(target, config);
-                }
-
-                reverseAction(prevSettings.action);
-                if(  settings['switcher'] === 'on'){
-                    processAll($(document.body));
-                }*/
-
                 sendResponse({"name":"done"});
                 break;
             case 'stop': 
@@ -94,14 +84,22 @@
     }
 
     function _filter($element, keyword){
-        $element.find('.userContent:contains("' + keyword + '"), \
-                      .actorName:contains("' + keyword + '"), \
-                      ._5pbw:contains("' + keyword + '")' )
-            .closest("div._5jmm")
-            .each(function(i,dom){
-                chrome.runtime.sendMessage({"name": "addCount", "message":keyword});
-            })
-            .addClass("FP-filter").fadeOut();
+        try{
+            $element.has('.userContent:contains("' + keyword + '"), \
+                          .UFICommentContent:contains("' + keyword + '"), \
+                          ._5pb1:contains("' + keyword + '"), \
+                          ._5pbw:contains("' + keyword + '")' )
+                .each(function(i,dom){
+                    if( typeof blockData[keyword+$(dom).attr("data-dedupekey")] === "undefined" ){
+                        chrome.runtime.sendMessage({"name": "addCount", "message":keyword});
+                        blockData[keyword+$(dom).attr("data-dedupekey")] = 1;
+                    }
+                })
+                .addClass("FP-filter").fadeOut();
+        }catch(e){
+            console.log(e.name + ": " + e.message);
+            postObserver.disconnect();
+        }
     }
 
     var processAll = function($objectCollection, keywords){
@@ -129,6 +127,7 @@
      * undo the previous status
      ****/
     var reverseAction = function(oriAction){
+        blockData = {};
         $(".FP-filter").each(function(i, domItem){
             $(domItem).removeClass("FP-filter").fadeIn();
         });

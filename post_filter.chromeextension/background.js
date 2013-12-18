@@ -184,7 +184,6 @@ chrome.contextMenus.onClicked.addListener(function(info, tab) {
 });
 
 
-
 /******
  ** Event listener 
  ************/
@@ -192,12 +191,6 @@ chrome.contextMenus.onClicked.addListener(function(info, tab) {
 chrome.runtime.onInstalled.addListener(function(details) {
     if( typeof details.reason === 'undefined') return;
 
-    var init = function(){
-        BlockKeywords.save();
-        Switcher.save();
-    };
-
-    init();
     switch (details.reason) {
     case "install": 
         //first install, save default settings into storage
@@ -214,11 +207,37 @@ chrome.runtime.onInstalled.addListener(function(details) {
                                           return (keyword !=="");
                                       })
                                      );
-                chrome.runtime.reload();
             });
         }
         break;
     }
+
+    var init = function(){
+        Switcher.save();
+        BlockKeywords.resetCounter();
+
+        // parse all windows, re-inject the new content script to facebook
+        chrome.windows.getAll({
+            populate: true
+        }, function (windows) {
+            windows.forEach(function(_window){
+                _window.tabs.forEach(function(tab){
+                    if( tab.url.match(/https:\/\/www.facebook.com/gi) ) {
+                        chrome.app.getDetails().content_scripts[0].js.forEach(function(script){
+                            chrome.tabs.executeScript(tab.id, {file: script});
+                        });
+                        chrome.pageAction.show(tab.id); 
+                        chrome.tabs.sendMessage(tab.id, 
+                                                {"name": "init",
+                                                 "settings": {"switcher": Switcher.get(), 
+                                                              "block.keyword": BlockKeywords.get()}});
+                    }
+                });
+            });
+        });
+    };
+    init();
+
 });
 
 // Listen for any changes to the URL of any tab. only show the page action when the url's hostname is www.facebook.com
@@ -241,8 +260,7 @@ chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
                   notifyTabScript("init",                    
                                   null, 
                                   {"switcher": Switcher.get(), 
-                                   "block.keyword": BlockKeywords.get()},
-                                  null);
+                                   "block.keyword": BlockKeywords.get()},null);
                   chrome.pageAction.show(tabId);
               }
         }
