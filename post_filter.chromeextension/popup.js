@@ -116,7 +116,7 @@ var event_addBlockKeyword = function(e){
 
 	_gaq.push(['_trackEvent', 'KeywordChanged', keyword]);
 
-    if(keyword === '') return; 
+    if(keyword === '') return false; 
     blockKeywordUI.addAndSet(keyword);
     $("#input_keyword").val("");
 
@@ -138,7 +138,7 @@ var event_removeBlockKeyword = function(e){
     if( e.target.tagName.toLowerCase() !== "a" ) return;
 
     var keyword = $(e.target).nextAll("span.keyword").text();
-    if(keyword === '') return; 
+    if(keyword === '') return false; 
     blockKeywordUI.removeAndSet(keyword);
 
     return false;

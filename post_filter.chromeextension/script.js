@@ -88,7 +88,8 @@
             $element.has('.userContent:contains("' + keyword + '"), \
                           .UFICommentContent:contains("' + keyword + '"), \
                           ._5pb1:contains("' + keyword + '"), \
-                          ._5pbw:contains("' + keyword + '")' )
+                          ._5pbw:contains("' + keyword + '"), \
+                          .messageBody:contains("' + keyword + '")' /*ads message*/)
                 .each(function(i,dom){
                     if( typeof blockData[keyword+$(dom).attr("data-dedupekey")] === "undefined" ){
                         chrome.runtime.sendMessage({"name": "addCount", "message":keyword});
