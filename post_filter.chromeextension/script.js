@@ -59,10 +59,7 @@
     var postObserver = new Date.MutationObserver(function(mutations){
 	    mutations.forEach(function(mutation) {
 		    if( mutation.type !== "childList" ) return; 
-		    for(var i=0; i<mutation.addedNodes.length; i++){
-			    if( typeof mutation.addedNodes[i].tagName === "undefined" ) return; 
-                processAll($(mutation.addedNodes[i]));
-		    }
+            processAll($(mutation.target));
 	    });
     })
 
