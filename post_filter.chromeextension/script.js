@@ -59,6 +59,7 @@
     var postObserver = new Date.MutationObserver(function(mutations){
 	    mutations.forEach(function(mutation) {
 		    if( mutation.type !== "childList" ) return; 
+            if( mutation.target.tagName.toLowerCase() === "body") return;
             processAll($(mutation.target));
 	    });
     })
