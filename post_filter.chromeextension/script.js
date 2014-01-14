@@ -6,6 +6,8 @@
     var target = document.body;
     var config = { childList: true, subtree: true };
     var blockData = {}; //keyword-post dedupe mechanism
+    // { "word": {}, "word2": {} }
+    var keywordPostData = {};
 
     Date.MutationObserver = window.WebKitMutationObserver || window.MutationObserver || window.MozMutationObserver || null; 
     if( !Date.MutationObserver ) return; 
@@ -19,18 +21,23 @@
             switch( messageEvent.name){
             case 'addBlockKey': 
                 sendResponse({"name":"done"});
-                processAll($(document.body), [messageEvent.message]);
+                filter_keyword(messageEvent.message);
                 break;
 
             case 'removeBlockKey': 
-                //reverse all filter effect 
-                reverseAction(prevSettings.action);
+                blockData = {}; //clean the block data 
+
+                //re-mark the previous matched post
+                $(".FP-filter").toggleClass("FP-filter FP-prevfilter");
 
                 //use new block list to process all 
-                processAll($(document.body),settings["block.keyword"]);
+                filter_keywords(settings["block.keyword"]);
+
+                //if the old post is nolonger filter, made it fadein
+                $(".FP-prevfilter:not(.FP-filter)").fadeIn();
+                $(".FP-prevfilter").toggleClass("FP-prevfilter")
 
                 sendResponse({"name":"done"});
-
                 break;
 
             case 'clearBlockKey': 
@@ -56,38 +63,44 @@
         });
 
     //create a mutation observer 
-    var postObserver = new Date.MutationObserver(function(mutations){
-	    mutations.forEach(function(mutation) {
-		    if( mutation.type !== "childList" ) return; 
-            if( mutation.target.tagName.toLowerCase() === "body") return;
-            processAll($(mutation.target));
+    var observer_handler = function(mutations){
+         mutations.forEach(function(mutation) {
+		    if( mutation.type !== "childList" ) ; 
+            else if( mutation.target.tagName.toLowerCase() === "div" && 
+                (mutation.target.classList.contains("_5pcb") || 
+                 mutation.target.classList.contains("_4ikz")) ){
+                filter_keywords();
+                return false; 
+            }
 	    });
-    })
-
+    };
+    var postObserver = new Date.MutationObserver(observer_handler);
 
     /***************
      * process the filter action for a "single post node element"(ex. div._5jmm)
      * if keyword match, fade out this node element
      */
-    function filter($element, keywords){
+    function filter_keywords(keywords){
+        keywords = keywords || settings["block.keyword"];
         if( typeof keywords === "undefined" ||
             keywords.length <= 0) return; 
 
         // each object in this array is {"name": xx, "count":xx }
         keywords.forEach(function(keyword){
 			if (keyword.name.trim() !== ""){
-                _filter($element,keyword.name.trim());
+                filter_keyword(keyword.name.trim());
 			}
         });
     }
 
-    function _filter($element, keyword){
+    function filter_keyword(keyword){
         try{
-            $element.has('.userContent:contains("' + keyword + '"), \
-                          .UFICommentContent:contains("' + keyword + '"), \
-                          ._5pb1:contains("' + keyword + '"), \
-                          ._5pbw:contains("' + keyword + '"), \
-                          .messageBody:contains("' + keyword + '")' /*ads message*/)
+            $('.userContent:contains("' + keyword + '"), \
+              .UFICommentContent:contains("' + keyword + '"), \
+              ._5pb1:contains("' + keyword + '"), \
+              ._5pbw:contains("' + keyword + '"), \
+              .messageBody:contains("' + keyword + '")' /*ads message*/)
+                .closest("div._5jmm, li.uiUnifiedStory")
                 .each(function(i,dom){
                     if( typeof blockData[keyword+$(dom).attr("data-dedupekey")] === "undefined" ){
                         chrome.runtime.sendMessage({"name": "addCount", "message":keyword});
@@ -101,11 +114,8 @@
         }
     }
 
-    var processAll = function($objectCollection, keywords){
-        keywords = keywords || settings["block.keyword"];
-        $objectCollection.find("div._5jmm,li.uiStreamStory").each(function(index, element){
-		    filter( $(element), keywords );
-        }); 
+    var markOldFilterPost = function(){
+        $(".FP-filter").toggleClass("FP-filter FP-prevfilter");
     };
 
     var init = function(_settings){
@@ -116,7 +126,7 @@
         reverseAction(_settings.action);
 
         if(  settings['switcher'] === 'on'){
-            processAll($(document.body));
+            filter_keywords();
             postObserver.observe(target, config);
         }
     };

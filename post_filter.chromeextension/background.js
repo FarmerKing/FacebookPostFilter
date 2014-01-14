@@ -161,7 +161,7 @@ var removeBlockKey = function( removeKey ){
     BlockKeywords.removeKey(removeKey);
     BlockKeywords.resetCounter();
     notifyTabScript("removeBlockKey", 
-                    {"name":removeKey}, 
+                    removeKey, 
                     {"switcher": Switcher.get(), 
                      "block.keyword": BlockKeywords.get()},
                     null);
@@ -182,7 +182,7 @@ var addBlockKey = function( addedKey ){
     if( !BlockKeywords.addKey(addedKey) ) return false;
     reloadPopupPage();
     notifyTabScript("addBlockKey", 
-                    {"name": addedKey},
+                    addedKey,
                     {"switcher": Switcher.get(), 
                      "block.keyword": BlockKeywords.get()},
                     null);
@@ -230,11 +230,15 @@ var removeContextMenu = function(){
 var urlCheckAndLoad = function(url,tabId){
     var tabLocation = document.createElement('a');
     tabLocation.href= url;
-    if(typeof tabLocation.hostname === "undefined" ||
-       tabLocation.hostname !== "www.facebook.com" || 
-       typeof tabLocation.pathname === "undefined" || 
+    if(typeof tabLocation.hostname === "undefined" || 
+       tabLocation.hostname !== "www.facebook.com"){
+        //ignore this case do nothing
+        chrome.pageAction.hide(tabId); removeContextMenu();
+        return false;
+    }
+    if(typeof tabLocation.pathname === "undefined" || 
        tabLocation.pathname !== "/"
-      ){
+      ){ //the fb page is not at front page
           BlockKeywords.resetCounter();
           chrome.tabs.sendMessage(tabId, 
                                 {"name": "stop",
